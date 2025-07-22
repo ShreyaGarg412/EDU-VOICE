@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EDU-VOICE Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans relative">
+
+<!-- Floating AI Assistant Button -->
+<button onclick="toggleChatbot()"
+        class="fixed top-5 right-5 bg-gradient-to-r from-cyan-400 to-purple-600 text-white font-semibold rounded-full px-4 py-2 shadow-lg hover:scale-105 transition z-50">
+  ✨ AI Assistant
+</button>
+
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">🎙️ EDU-VOICE Dashboard</h1>
+
+  <!-- Tabs -->
+  <div class="flex justify-center mb-6 flex-wrap gap-2">
+    <button onclick="showTab('textTab', this)" class="tab-btn bg-white text-gray-700 font-semibold border rounded-full px-4 py-2 hover:bg-gray-100 transition active-tab">✍️ Enter Text</button>
+    <button onclick="showTab('fileTab', this)" class="tab-btn bg-white text-gray-700 font-semibold border rounded-full px-4 py-2 hover:bg-gray-100 transition">📁 Upload File</button>
+    <button onclick="showTab('audioTab', this)" class="tab-btn bg-white text-gray-700 font-semibold border rounded-full px-4 py-2 hover:bg-gray-100 transition">🔊 Audio</button>
+    <button onclick="showTab('quizTab', this)" class="tab-btn bg-white text-gray-700 font-semibold border rounded-full px-4 py-2 hover:bg-gray-100 transition">🧠 Quiz</button>
+    <button onclick="showTab('summaryTab', this)" class="tab-btn bg-white text-gray-700 font-semibold border rounded-full px-4 py-2 hover:bg-gray-100 transition">📄 Summary</button>
+  </div>
+
+  <!-- Text Tab -->
+  <div id="textTab" class="tab-content bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-blue-600">Enter Text</h2>
+    <form method="POST">
+      <textarea name="manual_text" class="w-full border rounded-md p-3 mb-4" rows="5" placeholder="Paste or type your content here..."></textarea>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">💾 Use This Text</button>
+      {% if message %}
+      <div class="mt-3 bg-green-100 border border-green-400 text-green-700 font-semibold px-4 py-2 rounded text-center">
+        {{ message }}
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- File Tab -->
+  <div id="fileTab" class="tab-content hidden bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-green-600">Upload PDF / Image</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" class="w-full border p-2 rounded mb-3">
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded font-semibold">📤 Upload / Submit</button>
+      {% if message %}
+      <div class="mt-3 bg-green-100 border border-green-400 text-green-700 font-semibold px-4 py-2 rounded text-center">
+        {{ message }}
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Audio Tab -->
+  <div id="audioTab" class="tab-content hidden bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-purple-600">Generate Audio</h2>
+    <form action="/generate_audio" method="POST">
+      <label class="block mb-1 font-semibold">Select Voice:</label>
+      <select name="voice" class="w-full border p-2 rounded mb-3">
+        {% for v in voices %}
+        <option value="{{ v }}">{{ v }}</option>
+        {% endfor %}
+      </select>
+      <label class="block mb-1 font-semibold">Select Language:</label>
+      <select name="language" class="w-full border p-2 rounded mb-3">
+        {% for code, lang in languages.items() %}
+        <option value="{{ code }}">{{ lang }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded font-semibold">🔊 Generate Audio</button>
+    </form>
+  </div>
+
+  <!-- Quiz Tab -->
+  <div id="quizTab" class="tab-content hidden bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-pink-600">Generate Quiz</h2>
+    <form action="/generate_quiz" method="POST">
+      <input type="number" name="num_questions" placeholder="Number of Questions" class="w-full border p-2 rounded mb-3" min="1">
+      <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded font-semibold">🧠 Generate Quiz</button>
+    </form>
+  </div>
+
+  <!-- Summary Tab -->
+  <div id="summaryTab" class="tab-content hidden bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-yellow-600">Generate Summary</h2>
+    <a href="/generate_summary" class="block w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded font-semibold text-center">📄 Generate Summary</a>
+  </div>
+</div>
+
+<!-- Chatbot Panel -->
+<div id="chatbotPanel"
+     class="hidden fixed top-24 right-5 w-80 h-[600px] bg-white shadow-lg rounded-lg flex flex-col overflow-hidden z-50">
+  <div class="bg-blue-600 text-white font-bold text-center py-2">AI Chatbot Assistant</div>
+  
+<div id="chatMessages"
+     class="flex-1 p-3 text-sm bg-gray-100 overflow-y-auto"
+     style="max-height: calc(80vh - 100px); overflow-y: auto;">
+</div>
+  
+  <div class="p-2 flex gap-2">
+    <input type="text" id="chatInput" class="flex-1 border rounded px-2 py-1" placeholder="Type your message...">
+    <button onclick="sendMessage()" class="bg-blue-600 text-white rounded px-3 py-1 font-semibold">Send</button>
+  </div>
+</div>
+
+
+<script>
+  function toggleChatbot() {
+    const panel = document.getElementById('chatbotPanel');
+    panel.classList.toggle('hidden');
+    panel.classList.toggle('flex');
+  }
+
+  function showTab(tabId, clickedButton) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('bg-blue-600', 'text-white');
+      btn.classList.add('bg-white', 'text-gray-700');
+    });
+
+    clickedButton.classList.add('bg-blue-600', 'text-white');
+    clickedButton.classList.remove('bg-white', 'text-gray-700');
+  }
+
+  function appendMessage(sender, text) {
+    const chatbox = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = sender === 'user' ? 'text-right mb-2' : 'text-left mb-2';
+
+    // Handle multiline + prevent HTML injection
+    const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+
+    div.innerHTML = `<span class="${
+      sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'
+    } px-3 py-2 rounded-lg inline-block max-w-[90%] break-words">${safeText}</span>`;
+
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  function appendTypingIndicator() {
+    const chatbox = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+      <div class="text-left mb-2">
+        <span class="bg-gray-300 text-black px-3 py-2 rounded-lg inline-block">
+          🤖 Typing...
+        </span>
+      </div>
+    `;
+    chatbox.appendChild(typingDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const typingDiv = document.getElementById('typingIndicator');
+    if (typingDiv) typingDiv.remove();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    appendMessage('user', message);
+    input.value = '';
+
+    appendTypingIndicator();
+
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+
+      removeTypingIndicator();
+      console.log(data.response);
+
+      appendMessage('bot', data.response);
+
+    } catch (err) {
+      removeTypingIndicator();
+      appendMessage('bot', "❌ Error connecting to chatbot.");
+      console.error(err);
+    }
+  }
+</script>
+
+
+</body>
+</html>
+

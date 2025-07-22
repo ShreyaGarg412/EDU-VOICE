@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎧 Audio Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 py-[30px] font-sans">
+
+<div class="max-w-[960px] mx-auto px-[15px]">
+  <h2 class="mb-[20px] text-center text-[24px] font-bold text-gray-800">🎧 Your Audio is Ready</h2>
+
+  <div class="text-center mb-[20px]">
+    <audio controls class="mx-auto">
+      <source src="{{ audio_file }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <h4 class="text-[18px] font-semibold mb-[10px]">📄 Extracted Text</h4>
+  <div class="bg-white p-[12px] border rounded whitespace-pre-wrap">{{ raw_text }}</div>
+
+  <div class="mt-[20px] text-center">
+    <a href="{{ audio_file }}" download class="bg-green-600 hover:bg-green-700 text-white py-[10px] px-[20px] rounded">⬇️ Download Audio</a>
+    <a href="/" class="bg-gray-600 hover:bg-gray-700 text-white py-[10px] px-[20px] rounded ml-[10px]">🔙 Back to Home</a>
+  </div>
+</div>
+
+</body>
+</html>

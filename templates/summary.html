@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📝 Summary</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 py-[30px] font-sans">
+
+<div class="max-w-[960px] mx-auto px-[15px]">
+  <h2 class="mb-[20px] text-center text-[24px] font-bold text-gray-800">📝 Summary Generated</h2>
+
+  <div class="bg-blue-100 text-blue-800 p-[15px] rounded border border-blue-300">
+    <strong>Summary:</strong><br>
+    {{ summary }}
+  </div>
+
+  <details class="mt-[20px]">
+    <summary class="font-bold cursor-pointer">📄 Original Text</summary>
+    <div class="p-[15px] bg-white border rounded mt-[10px] whitespace-pre-wrap">{{ original }}</div>
+  </details>
+
+  <div class="text-center mt-[20px]">
+    <a href="/" class="bg-gray-600 hover:bg-gray-700 text-white py-[10px] px-[20px] rounded">⬅️ Back to home</a>
+  </div>
+</div>
+
+</body>
+</html>

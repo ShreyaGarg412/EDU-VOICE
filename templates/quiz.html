@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Interactive Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 py-[30px] font-sans">
+
+<div class="bg-white p-[30px] rounded-[12px] max-w-[900px] mx-auto">
+  <h2 class="mb-[20px] text-center text-[24px] font-bold text-gray-800">🧠 Your Quiz</h2>
+
+  <form id="quizForm">
+    {% for q in quiz %}
+      <div class="mb-[30px]">
+        <p class="font-semibold">Q{{ loop.index }}. {{ q.question }}</p>
+        {% set qid = 'q' ~ loop.index0 %}
+        {% for opt in q.options %}
+          <div class="mt-[5px]">
+            <input type="radio" name="{{ qid }}" value="{{ opt[0] }}"> {{ opt }}
+          </div>
+        {% endfor %}
+        <div class="hidden italic text-green-600 mt-[10px]" id="answer_{{ qid }}">
+          ✅ Correct Answer: {{ q.answer }}
+        </div>
+      </div>
+    {% endfor %}
+
+    <input type="hidden" id="answerKey" value="{{ quiz | map(attribute='answer') | join(',') }}">
+
+    <button type="button" onclick="evaluateQuiz()" class="bg-blue-600 hover:bg-blue-700 w-full text-white font-semibold py-[10px] rounded">Submit Quiz</button>
+  </form>
+
+  <div id="resultBox" class="hidden bg-blue-100 text-blue-800 p-[10px] rounded mt-[20px] text-center font-bold"></div>
+
+  <div class="text-center mt-[20px]">
+    <a href="/" class="bg-gray-600 hover:bg-gray-700 text-white py-[10px] px-[20px] rounded">🔙 Back to Home</a>
+  </div>
+</div>
+
+<script>
+function evaluateQuiz() {
+  const key = document.getElementById('answerKey').value.split(',');
+  let score = 0;
+  let total = key.length;
+
+  for (let i = 0; i < total; i++) {
+    const selected = document.querySelector(`input[name='q${i}']:checked`);
+    const answerBox = document.getElementById(`answer_q${i}`);
+
+    if (answerBox) answerBox.classList.remove('hidden');
+
+    if (selected && selected.value === key[i]) {
+      score++;
+    }
+  }
+
+  const resultBox = document.getElementById('resultBox');
+  resultBox.innerHTML = `🎉 Your Score: <strong>${score} / ${total}</strong>`;
+  resultBox.classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
