@@ -206,12 +206,17 @@ def generate_summary():
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=300)
     chunks = text_splitter.split_text(text)
 
-    summaries = []
-    for idx, chunk in enumerate(chunks):
-        part_summary = ask_gemini(f"Summarize part {idx + 1}:\n\n{chunk}", session_id)
-        summaries.append(part_summary)
+    if len(chunks) == 1:
+    # Agar sirf ek chunk hai to directly uska summary lo
+        final_summary = ask_gemini("Summarize this content:\n\n" + chunks[0])
+    else:
+       summaries = []
+       for idx, chunk in enumerate(chunks):
+          part_summary = ask_gemini(f"Summarize part {idx+1}:\n\n{chunk}")
+          summaries.append(part_summary)
 
-    final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries), session_id)
+    final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries))
+
 
     return render_template("summary.html", summary=final_summary, original=text)
 
