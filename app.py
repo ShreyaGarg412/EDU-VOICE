@@ -215,7 +215,7 @@ def generate_summary():
           part_summary = ask_gemini(f"Summarize part {idx+1}:\n\n{chunk}")
           summaries.append(part_summary)
 
-    final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries))
+       final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries))
 
 
     return render_template("summary.html", summary=final_summary, original=text)
