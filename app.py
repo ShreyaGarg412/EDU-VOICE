@@ -60,6 +60,7 @@ def get_active_content():
                 return " ".join([page.get_text() for page in doc]), None
         elif ext in ["jpg", "jpeg", "png"]:
             image = Image.open(filepath)
+            image.thumbnail((2000, 2000)) 
             return pytesseract.image_to_string(image), None
         elif ext == "txt":
             with open(filepath, "r", encoding="utf-8") as f:

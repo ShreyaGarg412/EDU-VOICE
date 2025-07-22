@@ -1,17 +1,20 @@
-# Use official Python image
-FROM python:3.10
+# ✅ Use official Python image
+FROM python:3.10-slim
 
-# Install Tesseract
-RUN apt-get update && apt-get install -y tesseract-ocr
+# ✅ Install system dependencies (Tesseract)
+RUN apt-get update && \
+    apt-get install -y tesseract-ocr libgl1 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# ✅ Set working directory
 WORKDIR /app
 
-# Copy code
+# ✅ Copy project files
 COPY . .
 
-# Install Python dependencies
+# ✅ Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run your Flask app with gunicorn
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]
+# ✅ Run Gunicorn with increased timeout
+CMD ["gunicorn", "app:app", "--timeout", "300", "--workers", "2", "--bind", "0.0.0.0:5000"]
+
