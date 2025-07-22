@@ -8,11 +8,15 @@ from deep_translator import GoogleTranslator
 from werkzeug.utils import secure_filename
 from chatbot import ask_gemini, set_gemini_context, chat_sessions
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import platform
 
+if platform.system() == 'Windows':
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+else:
+    pytesseract.pytesseract.tesseract_cmd = 'tesseract'
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
