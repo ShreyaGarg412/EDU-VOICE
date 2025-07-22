@@ -16,5 +16,5 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ✅ Run Gunicorn with increased timeout
-CMD ["gunicorn", "app:app", "--timeout", "300", "--workers", "2", "--bind", "0.0.0.0:5000"]
+CMD ["gunicorn", "app:app", "--timeout", "500", "--workers", "3", "--bind", "0.0.0.0:5000"]
 
