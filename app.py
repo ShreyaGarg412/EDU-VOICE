@@ -9,14 +9,15 @@ from werkzeug.utils import secure_filename
 from chatbot import ask_gemini, set_gemini_context, chat_sessions
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 ELEVENLABS_API_KEY = os.getenv("Eleven_labs_API_key")
 print(f"LOADED API KEY: {ELEVENLABS_API_KEY}")
 
