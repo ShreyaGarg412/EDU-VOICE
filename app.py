@@ -141,20 +141,27 @@ def generate_summary():
     session_id = "summary_session"
     set_gemini_context(session_id, text)
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=300)
-    chunks = splitter.split_text(text)
-
-    summaries = []
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=300)
+    chunks = text_splitter.split_text(text)
 
     if len(chunks) == 1:
-        summaries.append(ask_gemini("Summarize this content:\n\n" + chunks[0], session_id))
+        final_summary = ask_gemini("Summarize this content:\n\n" + chunks[0])
     else:
+        summaries = []
         for idx, chunk in enumerate(chunks):
-            summaries.append(ask_gemini(f"Summarize part {idx+1}:\n\n{chunk}", session_id))
+            summaries.append(ask_gemini(f"Summarize part {idx + 1}:\n\n{chunk}"))
 
-    final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries), session_id)
+        # ✨ Check if all summaries are unique or just one repeated response
+        summaries = [s.strip() for s in summaries if s.strip()]
+        unique_summaries = list(set(summaries))
+
+        if len(unique_summaries) == 1:
+            final_summary = unique_summaries[0]
+        else:
+            final_summary = ask_gemini("Combine these summaries:\n\n" + "\n\n".join(summaries))
 
     return render_template("summary.html", summary=final_summary, original=text)
+
 
 @app.route("/generate_quiz", methods=["POST"])
 def generate_quiz():
