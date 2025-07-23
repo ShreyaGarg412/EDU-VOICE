@@ -19,6 +19,10 @@ def chunk_text_with_langchain(text):
     return splitter.split_text(text)
 
 def set_gemini_context(session_id, text):
+    if not text or not text.strip():
+        print("❌ Empty text passed to context setter.")
+        return
+
     chunks = chunk_text_with_langchain(text)
     if session_id not in chat_sessions:
         chat_sessions[session_id] = {
@@ -28,12 +32,16 @@ def set_gemini_context(session_id, text):
     else:
         chat_sessions[session_id]["context"] = chunks
 
+
 def ask_gemini(msg, session_id="default_session"):
     if session_id not in chat_sessions:
         return "No context found. Please upload a file first."
 
     chat = chat_sessions[session_id]["chat"]
-    context_chunks = chat_sessions[session_id]["context"]
+    context_chunks = chat_sessions[session_id]["context",[]]
+    if not context_chunks:
+        return "❌ No context available. Please upload a file first."
+    
     context_text = "\n\n".join(context_chunks[:100])  # limit context
 
     prompt = f"""Context:
