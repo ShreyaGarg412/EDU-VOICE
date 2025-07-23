@@ -38,7 +38,7 @@ def ask_gemini(msg, session_id="default_session"):
         return "No context found. Please upload a file first."
 
     chat = chat_sessions[session_id]["chat"]
-    context_chunks = chat_sessions[session_id]["context",[]]
+    context_chunks = chat_sessions[session_id].get("context", [])
     if not context_chunks:
         return "❌ No context available. Please upload a file first."
     
