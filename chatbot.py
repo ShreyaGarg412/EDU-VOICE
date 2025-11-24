@@ -7,7 +7,7 @@ load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 chat_sessions = {}
 
 def chunk_text_with_langchain(text):
@@ -42,7 +42,7 @@ def ask_gemini(msg, session_id="default_session"):
     if not context_chunks:
         return "❌ No context available. Please upload a file first."
     
-    context_text = "\n\n".join(context_chunks[:100])  # limit context
+    context_text = "\n\n".join(context_chunks[:1000])  
 
     prompt = f"""Context:
 {context_text}
