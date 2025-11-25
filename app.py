@@ -41,8 +41,9 @@ language_map = {
 }
 
 @app.route("/")
-def home_redirect():
-    return redirect(url_for('index'))
+def home():
+    return render_template("home.html")
+
 
 def get_active_content():
     if session.get('manual_text_input'):
